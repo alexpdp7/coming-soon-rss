@@ -4,6 +4,7 @@ from http import server
 
 import httpx
 import bs4
+from feedgen import feed
 
 
 def get_comingsoon_links():
@@ -41,13 +42,26 @@ class ComingSoon:
 COMING_SOON = ComingSoon()
 
 
+def rss(articles):
+    fg = feed.FeedGenerator()
+    fg.title("comingsoon.net")
+    fg.link(href="http://example.com")
+    fg.description("comingsoon.net")
+    for article in articles:
+        fe = fg.add_entry()
+        fe.id(article.href)
+        fe.title(article.title)
+        fe.link(href=article.href)
+    return fg.rss_str(pretty=True)
+
+
 class Handler(server.BaseHTTPRequestHandler):
     def do_GET(self):
         self.send_response(server.HTTPStatus.OK)
         self.send_header("Content-Type", "text/html; charset=utf-8")
         self.end_headers()
         COMING_SOON.refresh()
-        self.wfile.write(repr(COMING_SOON.get_newest()).encode("utf8"))
+        self.wfile.write(rss(COMING_SOON.get_newest()))
 
 
 def main():
