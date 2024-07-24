@@ -61,7 +61,7 @@ class Handler(server.BaseHTTPRequestHandler):
         self.send_header("Content-Type", "text/html; charset=utf-8")
         self.end_headers()
         COMING_SOON.refresh()
-        self.wfile.write(rss(COMING_SOON.get_newest()))
+        self.wfile.write(rss(COMING_SOON.get_newest()[0:100]))
 
 
 def main():
