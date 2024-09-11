@@ -1,0 +1,67 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: coming-soon-rss
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: coming-soon-rss
+  name: coming-soon-rss
+  namespace: coming-soon-rss
+spec:
+  selector:
+    matchLabels:
+      app: coming-soon-rss
+  template:
+    metadata:
+      labels:
+        app: coming-soon-rss
+    spec:
+      containers:
+      - image: ghcr.io/astral-sh/uv:debian
+        command:
+          - uv
+          - run
+          - --with
+          - git+https://github.com/alexpdp7/coming-soon-rss.git
+          - coming-soon-rss
+        imagePullPolicy: Always
+        name: coming-soon-rss
+        ports:
+        - containerPort: 8000
+          protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: coming-soon-rss
+  name: coming-soon-rss
+  namespace: coming-soon-rss
+spec:
+  ports:
+  - port: 8000
+    protocol: TCP
+  selector:
+    app: coming-soon-rss
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: coming-soon-rss
+  namespace: coming-soon-rss
+spec:
+  rules:
+  - host: coming-soon-rss
+    http:
+      paths:
+      - backend:
+          service:
+            name: coming-soon-rss
+            port:
+              number: 8000
+        path: /
+        pathType: Prefix
