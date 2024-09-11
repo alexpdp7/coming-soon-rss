@@ -55,7 +55,7 @@ metadata:
   namespace: coming-soon-rss
 spec:
   rules:
-  - host: coming-soon-rss
+  - host: coming-soon-rss.example.com
     http:
       paths:
       - backend:
